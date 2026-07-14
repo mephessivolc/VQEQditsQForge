@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    container_name: pytorch_app
+    volumes:
+      - .:/app
+    environment:
+      - ENV=development
