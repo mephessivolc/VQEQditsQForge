@@ -6,3 +6,5 @@ services:
       - .:/app
     environment:
       - ENV=development
+    tty: true
+    stdin_open: true

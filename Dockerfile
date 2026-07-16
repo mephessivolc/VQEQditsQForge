@@ -19,4 +19,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Comando para rodar a aplicação
-CMD ["python", "main.py"]
+CMD ["python", "text_cuda.py"]
