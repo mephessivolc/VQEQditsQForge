@@ -6,3 +6,7 @@
 *.fatbin
 *.pyc
 __pycache__/
+
+
+dev/
+.vscode/
