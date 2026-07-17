@@ -5,6 +5,13 @@ FROM pytorch/pytorch:2.2.1-cuda12.1-cudnn8-runtime
 # Define o diretório de trabalho
 WORKDIR /app
 
+# 2. Cria o ambiente virtual chamado 'dev'
+RUN python -m venv /dev
+
+# 3. O SEGREDO: Atualiza o PATH do sistema para apontar para o venv criado
+# Isso faz com que qualquer comando 'python' ou 'pip' use o venv por padrão!
+ENV PATH="/dev/bin:$PATH"
+
 # Instala dependências do sistema que sua biblioteca possa precisar (opcional)
 RUN apt-get update && apt-get install -y \
     git \
