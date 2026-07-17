@@ -3,13 +3,13 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 
-n = 2 # number of qudits
-dim = 3 # qudit dimension
+n = 4 # number of qudits
+dim = 5 # qudit dimension
 device = 'cuda' # or cpu if you dont have cuda
 epochs = 1000
 
 # Define model and optimizer
-model = models.VQE(device=device)
+model = models.VQE(n=n, dim=dim, device=device)
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 
 # Define Hamiltonian, here in this example we use a random hamiltonian

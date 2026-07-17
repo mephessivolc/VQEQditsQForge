@@ -7,36 +7,37 @@ class VQE(nn.Module):
 
         self.n = n
         self.device = device
-        self.init = qf.State('0-0', dim=dim, device=device)
+        
+        # Cria a string de estado inicial dinamicamente, ex: '0-0-0' para n=3
+        init_state_str = "-".join(["0"] * n)
+        self.init = qf.State(init_state_str, dim=dim, device=device)
 
         self.circuit = qf.Circuit(wires=n, dim=dim, device=device)
 
-        self.circuit.RX(index=[i for i in range(n)], j=0, k=1)
-        self.circuit.RX(index=[i for i in range(n)], j=0, k=2)
-        self.circuit.RX(index=[i for i in range(n)], j=1, k=2)
+        # --- CAMADA VARIACIONAL 1 ---
+        # Aplica rotações em todos os pares de transição possíveis para a dimensão escolhida
+        for j in range(dim):
+            for k in range(j + 1, dim):
+                self.circuit.RX(index=[i for i in range(n)], j=j, k=k)
+                self.circuit.RY(index=[i for i in range(n)], j=j, k=k)
         
-        self.circuit.RY(index=[i for i in range(n)], j=0, k=1)
-        self.circuit.RY(index=[i for i in range(n)], j=0, k=2)
-        self.circuit.RY(index=[i for i in range(n)], j=1, k=2)
+        for j in range(dim - 1):
+            self.circuit.RZ(index=[i for i in range(n)], j=j)
 
-        self.circuit.RZ(index=[i for i in range(n)], j=0)
-        self.circuit.RZ(index=[i for i in range(n)], j=1)
+        # --- EMARANHAMENTO (Entanglement) ---
+        # Aplica CNOTs em cadeia para ligar os qudits vizinhos
+        for i in range(n - 1):
+            self.circuit.CNOT(index=[i, i + 1])
 
-        self.circuit.CNOT(index=[0,1])
-
-        self.circuit.RX(index=[i for i in range(n)], j=0, k=1)
-        self.circuit.RX(index=[i for i in range(n)], j=0, k=2)
-        self.circuit.RX(index=[i for i in range(n)], j=1, k=2)
+        # --- CAMADA VARIACIONAL 2 ---
+        for j in range(dim):
+            for k in range(j + 1, dim):
+                self.circuit.RX(index=[i for i in range(n)], j=j, k=k)
+                self.circuit.RY(index=[i for i in range(n)], j=j, k=k)
         
-        self.circuit.RY(index=[i for i in range(n)], j=0, k=1)
-        self.circuit.RY(index=[i for i in range(n)], j=0, k=2)
-        self.circuit.RY(index=[i for i in range(n)], j=1, k=2)
-
-        self.circuit.RZ(index=[i for i in range(n)], j=0)
-        self.circuit.RZ(index=[i for i in range(n)], j=1)
+        for j in range(dim - 1):
+            self.circuit.RZ(index=[i for i in range(n)], j=j)
 
     def forward(self):
-
         state = self.circuit(self.init)
-
         return state
