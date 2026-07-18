@@ -11,8 +11,18 @@ class Hamiltonian:
         # Matrizes de distância d_ij (exemplo: matriz aleatória ou definida por você)
         # Ela deve ter tamanho (dim, dim)
 
-        d = torch.randn((dim, dim), device=device, dtype=torch.complex64) 
-        self.d = 0.5 * (d + d.conj().T) # Garantindo que as distâncias sejam simétricas/reais
+        # d = torch.randn((dim, dim), device=device, dtype=torch.complex64) 
+        # self.d = 0.5 * (d + d.conj().T) # Garantindo que as distâncias sejam simétricas/reais
+
+        d_real = torch.rand((dim, dim), device=device) * 10.0
+
+        # Garante que a matriz seja simétrica (distância de i para j é igual a de j para i)
+        # e zera a diagonal principal (a distância de um ponto para ele mesmo é 0)
+        d_simetrica = 0.5 * (d_real + d_real.T)
+        d_simetrica.fill_diagonal_(0.0)
+
+        # Converte para complex64 apenas para manter a compatibilidade com o restante do código quântico
+        self.d = d_simetrica.to(torch.complex64)
 
         self._H = self.create_hamiltonian()
 
